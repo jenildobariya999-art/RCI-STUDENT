@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Private Announcement Board</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <main class="app-shell">
+    <header class="hero">
+      <p class="eyebrow">Private friends notice board</p>
+      <h1>Meetup Announcements</h1>
+      <p>Admin posts date, time, place, and message. Only approved phone numbers can enter with OTP.</p>
+    </header>
+
+    <section class="card" id="auth-card">
+      <h2>Register / Login</h2>
+      <div class="grid two">
+        <form id="register-form">
+          <h3>Register</h3>
+          <input name="name" placeholder="Your name" required />
+          <input name="phone" placeholder="10 digit mobile number" required />
+          <button>Register for admin approval</button>
+        </form>
+        <form id="otp-form">
+          <h3>OTP Login</h3>
+          <input name="phone" placeholder="Approved mobile number" required />
+          <button name="action" value="request">Send OTP</button>
+          <input name="otp" placeholder="Enter OTP" />
+          <button name="action" value="verify">Verify OTP</button>
+        </form>
+      </div>
+      <form id="admin-login" class="admin-login">
+        <h3>Admin Login</h3>
+        <input type="password" name="password" placeholder="Secret password" required />
+        <button>Open Admin Panel</button>
+      </form>
+      <p id="auth-message" class="status"></p>
+    </section>
+
+    <section class="tabs hidden" id="member-area">
+      <nav>
+        <button data-tab="all" class="active">ALL</button>
+        <button data-tab="meetup">Meetup</button>
+        <button data-tab="support">Raise Hand For Support</button>
+        <button data-tab="chat">Chat</button>
+      </nav>
+
+      <div id="tab-all" class="tab-panel"></div>
+      <div id="tab-meetup" class="tab-panel hidden"></div>
+      <div id="tab-support" class="tab-panel hidden">
+        <h2>Raise Hand For Support</h2>
+        <p>This message is private. Only admin receives it.</p>
+        <form id="support-form">
+          <textarea name="message" placeholder="Write your support request" required></textarea>
+          <button>Send to admin</button>
+        </form>
+      </div>
+      <div id="tab-chat" class="tab-panel hidden">
+        <h2>Group Chat</h2>
+        <div id="chat-list" class="chat-list"></div>
+        <form id="chat-form" class="inline-form">
+          <input name="message" placeholder="Type message for approved members" required />
+          <button>Send</button>
+        </form>
+      </div>
+    </section>
+
+    <section class="card hidden" id="admin-area">
+      <h2>Admin Panel</h2>
+      <div class="grid two">
+        <form id="announcement-form">
+          <h3>Post Announcement</h3>
+          <select name="category">
+            <option>ALL</option>
+            <option>Meetup</option>
+          </select>
+          <textarea name="message" placeholder="Message / notice" required></textarea>
+          <input type="date" name="meetDate" />
+          <input type="time" name="meetTime" />
+          <input name="place" placeholder="Place to meet" />
+          <input name="adminName" placeholder="Your name" required />
+          <button>Send Notification</button>
+        </form>
+        <div>
+          <h3>Approved Phone Access</h3>
+          <form id="approve-form" class="inline-form">
+            <input name="phone" placeholder="10 digit mobile" required />
+            <button name="approved" value="true">Approve</button>
+            <button name="approved" value="false">Block</button>
+          </form>
+          <div id="user-list"></div>
+        </div>
+      </div>
+      <h3>Support Messages</h3>
+      <div id="support-list"></div>
+    </section>
+  </main>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
