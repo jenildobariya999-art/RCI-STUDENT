@@ -1,3 +1,4 @@
+const socket = io();
 let userToken = localStorage.getItem('userToken') || '';
 let adminToken = localStorage.getItem('adminToken') || '';
 
@@ -58,6 +59,7 @@ async function loadChat() {
 
 async function loadAdmin() {
   if (!adminToken) return;
+  socket.emit('admin:join', adminToken);
   const [users, support] = await Promise.all([
     api('/api/admin/users', {}, adminToken),
     api('/api/admin/support', {}, adminToken)
@@ -174,6 +176,12 @@ setInterval(() => {
   if (userToken) Promise.allSettled([loadAnnouncements(), loadChat()]);
   if (adminToken) loadAdmin().catch(() => {});
 }, 15000);
+  } catch (error) { showMessage(error.message, true); }
+});
+
+socket.on('announcement', loadAnnouncements);
+socket.on('chat', loadChat);
+socket.on('support', loadAdmin);
 
 if (userToken) {
   $('#member-area').classList.remove('hidden');
