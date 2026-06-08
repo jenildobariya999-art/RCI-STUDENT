@@ -10,6 +10,7 @@ A small website for a CA student group where only the admin can post announcemen
 - **OTP verification:** approved members receive OTP through Fast2SMS.
 - **Buttons / sections:** `ALL`, `Meetup`, `Raise Hand For Support`, and `Chat`.
 - **Notifications:** new announcements are sent by SMS and browser push notification when VAPID keys are configured.
+- **Encrypted storage:** announcements, support requests, and chat messages are encrypted in the data file with AES-256-GCM.
 - **Encrypted storage:** announcements, support requests, and chat messages are encrypted in SQLite with AES-256-GCM.
 - **Simple group chat:** all approved members can chat together.
 - **Vercel-compatible API:** includes `api/index.js` and `vercel.json` so `/api/*` requests run as a Vercel serverless function.
@@ -30,6 +31,7 @@ The website also has **Chat** for approved members.
 | File | Purpose |
 | --- | --- |
 | `server.js` | Backend API, admin login, approval, OTP, encryption, notifications, chat, support. |
+| `lib/json-store.js` | Lightweight JSON data store used instead of native SQLite so Vercel can deploy without native module crashes. |
 | `api/index.js` | Vercel serverless entry point that exports the Express app. |
 | `vercel.json` | Vercel routing so frontend files and `/api/*` endpoints work correctly. |
 | `public/index.html` | Website layout, register page, OTP form, admin panel, and the four buttons. |
@@ -96,6 +98,17 @@ The website also has **Chat** for approved members.
 
 ## Vercel deployment note
 
+### Fix for `Expected ',' or '}' after property value in JSON`
+
+If Vercel shows `vercel/path0/package.json: Expected ',' or '}' after property value in JSON`, it means the deployed `package.json` text is not valid JSON. Common causes are a missing comma after a property, comments inside JSON, or editing the file in GitHub without keeping quotes/commas. This repo now includes `npm run check:json`, and Vercel runs it through `vercel-build` before tests so JSON mistakes fail with a clearer message.
+
+Before pushing to GitHub, run:
+
+```bash
+npm run check:json
+```
+
+
 The screenshot error `500: FUNCTION_INVOCATION_FAILED` means Vercel reached your project, but the backend serverless function crashed. This repo now includes `api/index.js` and `vercel.json` so Vercel knows how to run the Express API instead of trying to run the normal local server command.
 
 For Vercel, add these environment variables in **Vercel Dashboard → Project → Settings → Environment Variables**:
@@ -110,6 +123,7 @@ VAPID_PRIVATE_KEY=optional-browser-push-private-key
 VAPID_SUBJECT=mailto:you@example.com
 ```
 
+Do not set `DATABASE_PATH` on Vercel unless you know the path is writable. By default, Vercel uses `/tmp/rci-student.json` because only `/tmp` is writable in serverless functions. Important: `/tmp` is not permanent storage, so approvals/chats can reset after a cold start. For permanent data, keep GitHub for source code and deploy the app to Render, Railway, Fly.io, or a VPS with a real database.
 Do not set `DATABASE_PATH` on Vercel unless you know the path is writable. By default, Vercel uses `/tmp/rci-student.sqlite` because only `/tmp` is writable in serverless functions. Important: `/tmp` is not permanent storage, so approvals/chats can reset after a cold start. For permanent data, keep GitHub for source code and deploy the app to Render, Railway, Fly.io, or a VPS with a real database.
 
 GitHub Pages cannot run this backend because OTP, encryption, approval, and chat need a Node server.

@@ -168,6 +168,14 @@ $('#chat-form').addEventListener('submit', async (event) => {
   try {
     await api('/api/chat', { method: 'POST', body: JSON.stringify(Object.fromEntries(new FormData(event.currentTarget))) });
     event.currentTarget.reset();
+    await loadChat();
+  } catch (error) { showMessage(error.message, true); }
+});
+
+setInterval(() => {
+  if (userToken) Promise.allSettled([loadAnnouncements(), loadChat()]);
+  if (adminToken) loadAdmin().catch(() => {});
+}, 15000);
   } catch (error) { showMessage(error.message, true); }
 });
 

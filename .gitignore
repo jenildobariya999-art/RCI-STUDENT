@@ -4,3 +4,4 @@ node_modules/
 *.sqlite
 coverage/
 npm-debug.log*
+data.json
