@@ -1,0 +1,228 @@
+require('dotenv').config();
+
+const crypto = require('crypto');
+const path = require('path');
+const express = require('express');
+const helmet = require('helmet');
+const cors = require('cors');
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
+const webpush = require('web-push');
+
+const PORT = process.env.PORT || 3000;
+const JWT_SECRET = process.env.JWT_SECRET || 'dev-secret-change-me';
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'admin123';
+const FAST2SMS_API_KEY = process.env.FAST2SMS_API_KEY || '';
+const DEFAULT_DATABASE_PATH = process.env.VERCEL ? '/tmp/rci-student.json' : './data.json';
+const DATABASE_PATH = process.env.DATABASE_PATH || DEFAULT_DATABASE_PATH;
+const { encrypt, decrypt } = require('./lib/crypto-utils');
+const { JsonStore } = require('./lib/json-store');
+
+if (process.env.VAPID_PUBLIC_KEY && process.env.VAPID_PRIVATE_KEY) {
+  webpush.setVapidDetails(
+    process.env.VAPID_SUBJECT || 'mailto:admin@example.com',
+    process.env.VAPID_PUBLIC_KEY,
+    process.env.VAPID_PRIVATE_KEY
+  );
+}
+
+const app = express();
+const store = new JsonStore(DATABASE_PATH);
+
+app.use(helmet({ contentSecurityPolicy: false }));
+app.use(cors());
+app.use(express.json({ limit: '1mb' }));
+app.use(express.static(path.join(__dirname, 'public')));
+
+function initDb() {
+  return store;
+}
+
+function sign(payload) {
+  return jwt.sign(payload, JWT_SECRET, { expiresIn: '7d' });
+}
+
+function requireAdmin(req, res, next) {
+  const token = (req.headers.authorization || '').replace('Bearer ', '');
+  try {
+    const decoded = jwt.verify(token, JWT_SECRET);
+    if (decoded.role !== 'admin') return res.status(403).json({ error: 'Admin only' });
+    next();
+  } catch {
+    res.status(401).json({ error: 'Login required' });
+  }
+}
+
+function requireUser(req, res, next) {
+  const token = (req.headers.authorization || '').replace('Bearer ', '');
+  try {
+    const decoded = jwt.verify(token, JWT_SECRET);
+    if (decoded.role !== 'user') return res.status(403).json({ error: 'Member only' });
+    const user = store.getApprovedUserById(decoded.id);
+    if (!user) return res.status(403).json({ error: 'Admin approval required' });
+    req.user = user;
+    next();
+  } catch {
+    res.status(401).json({ error: 'Login required' });
+  }
+}
+
+function normalizePhone(value) {
+  return String(value || '').replace(/\D/g, '').slice(-10);
+}
+
+function publicUser(user) {
+  return { id: user.id, name: user.name, phone: user.phone, approved: Boolean(user.approved) };
+}
+
+function publicAnnouncement(row) {
+  return { ...row, message: decrypt(row.message) };
+}
+
+async function sendSms(phone, message) {
+  if (!FAST2SMS_API_KEY) {
+    console.log(`[SMS disabled] ${phone}: ${message}`);
+    return { disabled: true };
+  }
+  const response = await fetch('https://www.fast2sms.com/dev/bulkV2', {
+    method: 'POST',
+    headers: {
+      authorization: FAST2SMS_API_KEY,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ route: 'q', message, language: 'english', flash: 0, numbers: phone })
+  });
+  if (!response.ok) throw new Error(`Fast2SMS failed: ${response.status}`);
+  return response.json();
+}
+
+async function notifyApprovedMembers(title, body) {
+  const users = store.listApprovedPhones();
+  await Promise.allSettled(users.map((user) => sendSms(user.phone, `${title}: ${body}`)));
+
+  if (!process.env.VAPID_PUBLIC_KEY || !process.env.VAPID_PRIVATE_KEY) return;
+  const payload = JSON.stringify({ title, body, url: '/' });
+  const subscriptions = store.listPushSubscriptions();
+  await Promise.allSettled(subscriptions.map(async (item) => {
+    try {
+      await webpush.sendNotification(JSON.parse(item.subscription), payload);
+    } catch (error) {
+      if (error.statusCode === 404 || error.statusCode === 410) {
+        store.deletePushSubscription(item.id);
+      }
+    }
+  }));
+}
+
+app.get('/api/config', (req, res) => {
+  res.json({ vapidPublicKey: process.env.VAPID_PUBLIC_KEY || '' });
+});
+
+app.post('/api/admin/login', async (req, res) => {
+  const ok = await bcrypt.compare(req.body.password || '', await bcrypt.hash(ADMIN_PASSWORD, 10));
+  if (!ok) return res.status(401).json({ error: 'Wrong password' });
+  res.json({ token: sign({ role: 'admin' }) });
+});
+
+app.get('/api/admin/users', requireAdmin, (req, res) => {
+  res.json(store.listUsers().map(publicUser));
+});
+
+app.post('/api/admin/approve', requireAdmin, async (req, res) => {
+  const phone = normalizePhone(req.body.phone);
+  const { approved = true } = req.body;
+  if (phone.length !== 10) return res.status(400).json({ error: 'Valid 10 digit phone required' });
+  const updated = store.setUserApproval(phone, approved ? 1 : 0);
+  if (!updated) return res.status(404).json({ error: 'Phone not found' });
+  if (approved) await sendSms(phone, 'Your announcement app access is approved. You can now verify OTP and enter.');
+  res.json({ ok: true });
+});
+
+app.post('/api/register', async (req, res) => {
+  const name = String(req.body.name || '').trim();
+  const phone = normalizePhone(req.body.phone);
+  if (!name || phone.length !== 10) return res.status(400).json({ error: 'Name and valid 10 digit phone required' });
+  store.upsertUser(name, phone);
+  res.json({ ok: true, message: 'Registration sent. Admin must approve this number before OTP login.' });
+});
+
+app.post('/api/request-otp', async (req, res) => {
+  const phone = normalizePhone(req.body.phone);
+  const user = store.getApprovedUserByPhone(phone);
+  if (!user) return res.status(403).json({ error: 'Only admin-approved numbers can request OTP.' });
+  const otp = String(crypto.randomInt(100000, 999999));
+  const otpHash = await bcrypt.hash(otp, 10);
+  store.setUserOtp(user.id, otpHash, Date.now() + 5 * 60 * 1000);
+  await sendSms(phone, `Your OTP is ${otp}. It expires in 5 minutes.`);
+  res.json({ ok: true, message: 'OTP sent' });
+});
+
+app.post('/api/verify-otp', async (req, res) => {
+  const phone = normalizePhone(req.body.phone);
+  const otp = String(req.body.otp || '').trim();
+  const user = store.getApprovedUserByPhone(phone);
+  if (!user || !user.otp_hash || Date.now() > user.otp_expires_at) return res.status(401).json({ error: 'OTP expired or invalid' });
+  const ok = await bcrypt.compare(otp, user.otp_hash);
+  if (!ok) return res.status(401).json({ error: 'Wrong OTP' });
+  store.clearUserOtp(user.id);
+  res.json({ token: sign({ role: 'user', id: user.id }), user: publicUser(user) });
+});
+
+app.get('/api/announcements', requireUser, (req, res) => {
+  res.json(store.listAnnouncements(50).map(publicAnnouncement));
+});
+
+app.post('/api/admin/announcements', requireAdmin, async (req, res) => {
+  const category = ['ALL', 'Meetup'].includes(req.body.category) ? req.body.category : 'ALL';
+  const message = String(req.body.message || '').trim();
+  const adminName = String(req.body.adminName || '').trim() || 'Admin';
+  if (!message) return res.status(400).json({ error: 'Message required' });
+  const row = publicAnnouncement(store.insertAnnouncement({
+    category,
+    message: encrypt(message),
+    meet_date: req.body.meetDate || '',
+    meet_time: req.body.meetTime || '',
+    place: req.body.place || '',
+    admin_name: adminName
+  }));
+  await notifyApprovedMembers(category, message);
+  res.json(row);
+});
+
+app.post('/api/support', requireUser, (req, res) => {
+  const message = String(req.body.message || '').trim();
+  if (!message) return res.status(400).json({ error: 'Message required' });
+  const row = store.insertSupport(req.user.id, encrypt(message));
+  res.json({ ok: true, id: row.id });
+});
+
+app.get('/api/admin/support', requireAdmin, (req, res) => {
+  const rows = store.listSupportWithUsers(100).map((row) => ({ ...row, message: decrypt(row.message) }));
+  res.json(rows);
+});
+
+app.get('/api/chat', requireUser, (req, res) => {
+  const rows = store.listChatWithUsers(100).map((row) => ({ ...row, message: decrypt(row.message) }));
+  res.json(rows);
+});
+
+app.post('/api/chat', requireUser, (req, res) => {
+  const message = String(req.body.message || '').trim();
+  if (!message) return res.status(400).json({ error: 'Message required' });
+  const saved = store.insertChat(req.user.id, encrypt(message));
+  const row = { id: saved.id, name: req.user.name, message, created_at: saved.created_at };
+  res.json(row);
+});
+
+app.post('/api/push-subscribe', requireUser, (req, res) => {
+  store.insertPushSubscription(req.user.id, req.body.subscription);
+  res.json({ ok: true });
+});
+
+initDb();
+if (require.main === module) {
+  app.listen(PORT, () => console.log(`Announcement app running on http://localhost:${PORT}`));
+}
+
+module.exports = { app, encrypt, decrypt, initDb, store };
+
