@@ -1,23 +1,14 @@
 {
-  "name": "rci-student-announcements",
+  "name": "vercel-turso-starter",
   "version": "1.0.0",
-  "description": "Private CA student announcement, meetup, support, and group chat app with OTP approval.",
+  "private": true,
+  "description": "Minimal Express API connected to Turso for Vercel",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js",
-    "test": "node --test"
+    "start": "node server.js"
   },
   "dependencies": {
-    "bcryptjs": "^2.4.3",
-    "better-sqlite3": "^11.10.0",
-    "cors": "^2.8.5",
-    "dotenv": "^16.5.0",
-    "express": "^4.21.2",
-    "helmet": "^8.1.0",
-    "jsonwebtoken": "^9.0.2",
-    "node-fetch": "^3.3.2",
-    "socket.io": "^4.8.1",
-    "web-push": "^3.6.7"
-  },
-  "devDependencies": {}
+    "@libsql/client": "^0.15.15",
+    "express": "^5.1.0"
+  }
 }
