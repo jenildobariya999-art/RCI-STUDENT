@@ -1,0 +1,909 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <link rel="stylesheet" href="./v125/TemplateData/style.css">
+  <link rel="manifest" href="./manifest.webmanifest">
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+	<link rel="manifest" href="/manifest.json">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+   <script>
+		/* -------------------- URL åæ°è§£æ -------------------- */
+		function getQueryParam(name) {
+			const url = new URL(window.location.href);
+			return url.searchParams.get(name);
+		}
+
+		window.fbqId   = getQueryParam("fbqId");     // Facebook Pixel ID
+		window.ttqId   = getQueryParam("ttqId");     // TikTok Pixel ID
+		window.gtagId  = getQueryParam("gtaId");     // Google Ads ID
+		window.gtmId   = getQueryParam("gtmId");     // GTM ID
+		window.kwaiqId = getQueryParam("kwaiId");    // å¿«æ Pixel ID
+		window.channel = getQueryParam("channel");    // æ¸ éid
+		window.skin    = getQueryParam("resIndex");    //ç®è¤id
+		console.log("window.channel :", window.channel);
+		window.pkg = getQueryParam("pkg");    //åå
+		console.log("window.pkg :", window.pkg);
+		window.dataLayer = window.dataLayer || []; // GTM åå§å
+
+		/* -------------------- Facebook Pixel åå§å -------------------- */
+		if (window.fbqId) {
+			console.log("[FB] Pixel ID :", window.fbqId);
+
+			!function(f,b,e,v,n,t,s)
+			  {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+			  n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+			  if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+			  n.queue=[];t=b.createElement(e);t.async=!0;
+			  t.src=v;s=b.getElementsByTagName(e)[0];
+			  s.parentNode.insertBefore(t,s)}(window,document,'script',
+			  'https://connect.facebook.net/en_US/fbevents.js');
+			  fbq('init', window.fbqId); 
+			  fbq('track', 'PageView');
+
+			  var fbqNoscript = document.createElement('noscript');
+			  var fbqNoscriptImg = document.createElement('img');
+			  fbqNoscriptImg.width = 1;
+			  fbqNoscriptImg.height = 1;
+			  fbqNoscriptImg.src = 'https://www.facebook.com/tr?id='+window.fbqId+'&ev=PageView&noscript=1';
+			  fbqNoscript.appendChild(fbqNoscriptImg);
+			  document.head.appendChild(fbqNoscript);
+		}
+
+		/* -------------------- TikTok Pixel åå§å -------------------- */
+		if (window.ttqId) {
+			console.log("[TikTok] Pixel ID :", window.ttqId);		
+			!function (w, d, t) {
+			w.TiktokAnalyticsObject=t;var ttq=w[t]=w[t]||[];ttq.methods=["page","track","identify","instances","debug","on","off","once","ready","alias","group","enableCookie","disableCookie"],ttq.setAndDefer=function(t,e){t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}};for(var i=0;i<ttq.methods.length;i++)ttq.setAndDefer(ttq,ttq.methods[i]);ttq.instance=function(t){for(var e=ttq._i[t]||[],n=0;n<ttq.methods.length;n++)ttq.setAndDefer(e,ttq.methods[n]);return e},ttq.load=function(e,n){var i="https://analytics.tiktok.com/i18n/pixel/events.js";ttq._i=ttq._i||{},ttq._i[e]=[],ttq._i[e]._u=i,ttq._t=ttq._t||{},ttq._t[e]=+new Date,ttq._o=ttq._o||{},ttq._o[e]=n||{};n=document.createElement("script");n.type="text/javascript",n.async=!0,n.src=i+"?sdkid="+e+"&lib="+t;e=document.getElementsByTagName("script")[0];e.parentNode.insertBefore(n,e)};
+			ttq.load(window.ttqId);
+			ttq.page();
+		  }(window, document, 'ttq')	
+		}
+
+		/* -------------------- Google Ads åå§å -------------------- */
+		if (window.gtagId) {
+			console.log("[Google Ads] Pixel ID :", window.gtagId);
+			var loadScript = document.createElement("script");
+			  loadScript.async = true;
+			  loadScript.src = "https://www.googletagmanager.com/gtag/js?id=" + window.gtagId;
+			  document.head.appendChild(loadScript);
+
+			  var template = document.createElement('script');
+			  template.type = 'text/javascript';
+			  template.innerHTML =
+			  'window.dataLayer = window.dataLayer || [];' +
+			  'function gtag(){dataLayer.push(arguments);}' +
+			  "gtag('js', new Date());" +
+			  "gtag('config', '" + window.gtagId +"');";
+			  document.head.appendChild(template);
+		}
+
+		/* -------------------- GTM åå§å -------------------- */
+		if (window.gtmId) {
+			console.log("[GTM] Pixel ID :", window.gtmId);
+			 (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer',window.gtmId);
+		}
+
+		/* -------------------- å¿«æ Pixel åå§å -------------------- */
+		if (window.kwaiqId) {
+			console.log("[Kwai] Pixel ID :", window.kwaiqId);
+			 !function(e,t){"object"==typeof exports&&"object"==typeof module?module.exports=t():"function"==typeof define&&define.amd?define([],t):"object"==typeof exports?exports.install=t():e.install=t()}(window,(function(){return function(e){var t={};function n(r){if(t[r])return t[r].exports;var o=t[r]={i:r,l:!1,exports:{}};return e[r].call(o.exports,o,o.exports,n),o.l=!0,o.exports}return n.m=e,n.c=t,n.d=function(e,t,r){n.o(e,t)||Object.defineProperty(e,t,{enumerable:!0,get:r})},n.r=function(e){"undefined"!=typeof Symbol&&Symbol.toStringTag&&Object.defineProperty(e,Symbol.toStringTag,{value:"Module"}),Object.defineProperty(e,"__esModule",{value:!0})},n.t=function(e,t){if(1&t&&(e=n(e)),8&t)return e;if(4&t&&"object"==typeof e&&e&&e.__esModule)return e;var r=Object.create(null);if(n.r(r),Object.defineProperty(r,"default",{enumerable:!0,value:e}),2&t&&"string"!=typeof e)for(var o in e)n.d(r,o,function(t){return e[t]}.bind(null,o));return r},n.n=function(e){var t=e&&e.__esModule?function(){return e.default}:function(){return e};return n.d(t,"a",t),t},n.o=function(e,t){return Object.prototype.hasOwnProperty.call(e,t)},n.p="",n(n.s=0)}([function(e,t,n){"use strict";var r=this&&this.__spreadArray||function(e,t,n){if(n||2===arguments.length)for(var r,o=0,i=t.length;o<i;o++)!r&&o in t||(r||(r=Array.prototype.slice.call(t,0,o)),r[o]=t[o]);return e.concat(r||Array.prototype.slice.call(t))};!function(e){var t=window;t.KwaiAnalyticsObject=e,t[e]=t[e]||[];var n=t[e];n.methods=["page","track","identify","instances","debug","on","off","once","ready","alias","group","enableCookie","disableCookie"];var o=function(e,t){e[t]=function(){var n=Array.from(arguments),o=r([t],n,!0);e.push(o)}};n.methods.forEach((function(e){o(n,e)})),n.instance=function(e){var t=n._i[e]||[];return n.methods.forEach((function(e){o(t,e)})),t},n.load=function(t,r){n._i=n._i||{},n._i[t]=[],n._i[t]._u="https://s1.kwai.net/kos/s101/nlav11187/pixel/events.js",n._t=n._t||{},n._t[t]=+new Date,n._o=n._o||{},n._o[t]=r||{};var o=document.createElement("script");o.type="text/javascript",o.async=!0,o.src="https://s1.kwai.net/kos/s101/nlav11187/pixel/events.js?sdkid="+t+"&lib="+e;var i=document.getElementsByTagName("script")[0];i.parentNode.insertBefore(o,i)}}("kwaiq")}])}));    
+			kwaiq.load(window.kwaiqId)
+			kwaiq.page()
+			kwaiq.instance(window.kwaiqId).track('contentView')
+		}
+	</script>
+</head>
+
+<body>
+  <div id="unity-container" class="unity-desktop">
+   <!-- ================== ååµåå¼é¡µ ================== -->
+<div id="payContainer" style="position:fixed;left:0;top:0;width:100%;height:100%;background:#ffffff;display:none;z-index:9999;">
+  <iframe id="payFrame" style="  width:100%;  height:100%;  border:#ffffff;"></iframe>
+  <button id="payClose" style="  position:absolute;  right:10px;  top:10px;  width:40px;  height:40px;  border:none;  border-radius:20px;  background:#ff4444;  color:#fff;  font-size:20px;  z-index:10000;">â</button>
+</div>
+    <canvas id="unity-canvas" width=540 height=960 tabindex="-1"></canvas>
+    <div id="loaderContainer">
+      <div class="progress-wrap">
+        <div class="progress-bar">
+          <div class="progress-fill" id="progress-fill"></div>
+          <div id="progressPercent">0%</div>
+        </div>
+        <div id="loadingText">Downloading game resources...</div>
+      </div>
+    </div>
+  </div>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-messaging-compat.js"></script>
+  <script src="https://websdk.appsflyer.com"></script>
+  <script src="https://cdn.adjust.com/adjust-latest.min.js"></script>
+  <script>	
+	window.configPromise = (async () => {
+      try {
+        const response = await fetch('./platformConfig.json', { cache: 'no-store' });
+        if (!response.ok) {
+          throw new Error(`Config fetch failed: ${response.status}`);
+        }
+        const config = await response.json();
+
+        // æåæ¿å° config åï¼ç«å³åä¸äºåæ­¥çå¯ä½ç¨
+        window.APP_CONFIG = config;
+
+        if (config.apple_title) {
+          document.title = config.apple_title;
+        }
+
+        if (config.apple_mobile_web_app_title) {
+          const meta = document.createElement('meta');
+          meta.name = "apple-mobile-web-app-title";
+          meta.content = config.apple_mobile_web_app_title;
+          document.head.appendChild(meta);
+        }
+
+        if (config.apple_touch_icon) {
+          const link = document.createElement('link');
+          link.rel = 'apple-touch-icon';
+          link.href = config.apple_touch_icon;
+          link.sizes = '180x180';
+          document.head.appendChild(link);
+        }
+
+        if (config.apple_touch_startup_image) {
+          const link = document.createElement('link');
+          link.rel = 'apple-touch-startup-image';
+          link.href = config.apple_touch_startup_image;
+          document.head.appendChild(link);
+        }
+		console.log("window.configPromise  return")
+        return config;
+      } catch (err) {
+        console.warn('å è½½ config.json å¤±è´¥', err);
+        // å¯ä»¥éæ©è¿åç©ºå¯¹è±¡ãé»è®¤éç½®ï¼æèæåºéè¯¯çéæ±
+        return {};
+      }
+    })();
+	
+		// HTML å¯å¨æ¶ç«å³å è½½éç½®ï¼ä¸æ¬¡ãå¼æ­¥ï¼
+    window._configReady = (async () => {
+        const response = await fetch("config.bytes");
+        const buffer = await response.arrayBuffer();
+        window._configText = new TextDecoder("utf-8").decode(new Uint8Array(buffer));
+    })();
+	// HTML å¯å¨æ¶ç«å³å è½½éç½®ï¼ä¸æ¬¡ãå¼æ­¥ï¼
+    window._configIdentifierReady = (async () => {
+        const response = await fetch("identifier.txt");
+        const buffer = await response.arrayBuffer();
+        window._configIdentifierText = new TextDecoder("utf-8").decode(new Uint8Array(buffer));
+    })();
+	
+	function openPay(url)
+	{
+		var box = document.getElementById("payContainer");
+		var frame = document.getElementById("payFrame");
+
+		frame.src = url;
+		box.style.display = "block";
+
+		document.body.style.overflow = "hidden";
+	}
+
+	window.isPayOpen = false;
+	function closePay()
+	{
+		var box = document.getElementById("payContainer");
+		var frame = document.getElementById("payFrame");
+
+		box.style.display = "none";
+		frame.src = "";
+
+		document.body.style.overflow = "";
+		
+			// â éç½®ç¶æ
+		window.isPayOpen = false;
+	}
+
+	window.addEventListener("popstate", function () {
+
+		if (window.isPayOpen) {
+
+			closePay();
+
+			// å³é®ï¼è¡¥åä¸å±ï¼å¦åä¸ä¸æ¬¡ç´æ¥éåº
+			history.pushState({page:"game"}, "", location.href);
+
+			return;
+		}
+	});
+	
+	// å³é­æé®
+	document.addEventListener("DOMContentLoaded", function(){
+		var btn = document.getElementById("payClose");
+		if(btn){
+			btn.onclick = closePay;
+		}
+	});
+
+	window.addEventListener("load", function () {
+		history.pushState({page:"game"}, "", location.href);
+	});
+
+	
+	async function InitWebFCM_Internal() {
+		console.log('InitWebFCM_InternalInitWebFCM_InternalInitWebFCM_Internal');
+		if (!('serviceWorker' in navigator)) return;
+		if (!('PushManager' in window)) return;
+		const permission = await Notification.requestPermission();
+		if (permission !== 'granted') return;
+		// ä½¿ç¨å·²æ³¨åç PWA ServiceWorker
+		const reg = await navigator.serviceWorker.ready;
+		// ç­å¾ configPromise å è½½å®æ
+		const firebase_vapidKey = await window.configPromise.firebase_vapidKey
+		let token = localStorage.getItem("fcm_token");
+		if (!token) {
+			const messaging = firebase.messaging();
+			token = await messaging.getToken({
+			vapidKey: firebase_vapidKey,
+			serviceWorkerRegistration: reg
+			});
+			localStorage.setItem("fcm_token", token);
+		}
+		if(window.channel === "2019999")
+		{
+			console.log('[WebGL] FCM token:', token);
+		}		
+		// å Unity
+		unityInstance.SendMessage(
+			"WebGLCallbackReceiver",
+			"OnFCMToken",
+			token
+		);
+	}
+
+	let skin="0";
+	if(window.skin){
+		skin = window.skin + ""
+	}
+	let domains = [];
+	let version ="";
+	async function getDomains(configPromise) {
+		const ts = Date.now(); // æ¯«ç§æ¶é´æ³
+		const DOMAIN_API = configPromise.DOMAIN_API
+		for (const d of DOMAIN_API) {
+		  try {
+		    console.log(d);
+			const url = d.includes("?")
+				? `${d}&_ts=${ts}`
+				: `${d}?_ts=${ts}`;
+			const resp = await fetch(url, { cache: "no-store" });
+			const data = await resp.json();
+            const item = data[skin];
+			if (item && Array.isArray(item.domains) && item.domains.length) {
+				domains = item.domains.slice(); // åªåå½åå¹³å°
+				if(window.channel === "2019999")
+				{
+					console.log("skin:", skin, "domains:", domains);
+				}
+				return;
+			}
+		  } catch (e) {
+		  }
+		}
+		if (!domains.length)
+		{
+			console.warn("ååæ¥å£è¯·æ±å¤±è´¥ï¼ç»§ç»­ä½¿ç¨å½ååå");
+			domains = [configPromise.domains];
+		}	 
+	}
+	
+	
+	// FisherâYates æ´çï¼çæ­£éæºï¼
+	function shuffle(arr) {
+		for (let i = arr.length - 1; i > 0; i--) {
+		const j = Math.floor(Math.random() * (i + 1));
+		[arr[i], arr[j]] = [arr[j], arr[i]];
+		}
+		return arr;
+	}
+	
+    async function pickAvailableDomain(domains) {
+	const shuffled = shuffle(domains.slice());
+	for (const d of shuffled) {
+		try {
+			//console.log(d);
+			if(d.startsWith("http://192.168.")){
+				return d;
+			}
+			await fetch("https://"+d, {
+				mode: 'no-cors',
+				cache: 'no-store'
+			});
+			return "https://"+d;
+		  } catch (e) {}
+		}
+		throw new Error('All CDN unavailable');
+	}
+	
+	async function GetAppVersion(domain) {
+		const ts = Date.now(); // æ¯«ç§æ¶é´æ³
+		const d = domain + "/AppVersion.txt"
+		const url = d.includes("?")? `${d}&_ts=${ts}`:`${d}?_ts=${ts}`;
+		const response = await fetch(url);
+        const config = await response.json();
+		const item = config.find(entry => entry.channel === window.channel);
+		if (item) {
+			window.AppVersion = item.version
+		}else{
+			const fallbackVersion = config[config.length - 1]?.version ?? null;
+			window.AppVersion = fallbackVersion
+		}
+		if(window.channel === "2019999")
+		{
+			console.log("GetAppVersion url=",url);			
+		}		
+		console.log("window.channel = ",window.channel,"  appVersion = ", window.AppVersion);
+		return window.AppVersion		
+	}
+	
+   window.addEventListener("load", function () {
+      if ("serviceWorker" in navigator) {
+			navigator.serviceWorker.register("ServiceWorker.js");
+			navigator.serviceWorker.addEventListener('controllerchange', () => {
+			console.log('[PWA] SW updated, reloading...');
+			location.reload();
+		});
+      }
+    });
+
+	let deferredPrompt;
+	let clickCount = 0;
+	const requiredClicks = 3; // ç¹å»3æ¬¡è§¦åå®è£
+	let installtips=false;
+	window.addEventListener('beforeinstallprompt', (e) => {
+	  e.preventDefault(); // é»æ­¢é»è®¤å®è£æç¤º
+	  deferredPrompt = e; // ä¿å­äºä»¶
+	});
+	<!-- document.addEventListener('click', () => { -->
+	  <!-- if (!deferredPrompt) return; -->
+	  <!-- if (installtips) return; -->
+		 <!-- clickCount++; -->
+	  <!-- if (clickCount >= requiredClicks) { -->
+        <!-- deferredPrompt.prompt(); // å¼¹åºå®è£ -->
+        <!-- deferredPrompt.userChoice.then((choice) => { -->
+          <!-- deferredPrompt = null; // è§¦åä¸æ¬¡åæ¸é¤ -->
+		  <!-- installtips=true;// é¿å3æ¬¡åæ¯æ¬¡ç¹å»é½è§¦å å ä¸ä¸ªæ¬æ¬¡è§¦ååå°±ä¸åè§¦å -->
+       <!-- }); -->
+      <!-- } -->
+    <!-- }); -->
+    var container = document.querySelector("#unity-container");
+    var canvas = document.querySelector("#unity-canvas");
+    function closeLoading() {
+      if (typeof window.stopLoadingTips === "function") {
+        window.stopLoadingTips();
+      }
+      var _0x586046 = document['getElementById']('loaderContainer');
+      if (_0x586046)
+        _0x586046['remove']();
+    }
+	if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
+      var meta = document.createElement('meta');
+      meta.name = 'viewport';
+      <!-- meta.content = 'width=device-width, height=device-height, initial-scale=1.0, user-scalable=no, shrink-to-fit=yes'; -->
+      document.getElementsByTagName('head')[0].appendChild(meta);
+      container.className = "unity-mobile";
+      canvas.className = "unity-mobile";
+    } else {
+      // Desktop style: Render the game canvas in a window that can be maximized to fullscreen:
+      <!-- canvas.style.width = "100%"; -->
+      canvas.style.height = "100dvh";
+    }
+
+	function isIPad() {
+		return navigator.platform === 'iPad' || 
+		(navigator.userAgent.includes('Macintosh') && 'ontouchend' in document);
+	}
+
+    // æ£æµæ¯å¦ä¸ºç§»å¨è®¾å¤
+    function isMobileDevice() {
+      return (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) ||isIPad();
+    }
+	
+	let currentOrientation = "portrait";
+    function resizeGameUnityCanvas() {
+	  console.log(ishengping);
+	  if(ishengping)
+	  {
+		resizeLandscape();
+		return;
+	  }
+      let w = window.innerWidth;
+      let h = window.innerHeight;
+      let portraitRatio =540/960;
+      let landscapeRatio = 960/540;
+	  let portraitRatio1 =1080/1920;
+	  let targetratio = currentOrientation === "landscape" ? landscapeRatio : portraitRatio;
+      let currentRatio = w / h;
+	  
+	  if(isMobileDevice())
+	  {
+	  	if(w>h)
+		{
+			let  maxbili=2400/1080;
+			let  minbili =960/540;
+		<!-- if(currentRatio>minbili&&currentRatio<maxbili) -->
+		<!-- { -->
+			<!-- canvas.style.height = h + "px"; -->
+				<!-- canvas.style.width =  (h * portraitRatio) + "px"; -->
+				<!-- canvas.style.position = "absolute"; -->
+				<!-- canvas.style.top = (h / 2) + "px"; -->
+				<!-- canvas.style.left = "50%"; -->
+				<!-- canvas.style.transform = "translate(-50%, -50%)";	 -->
+		<!-- }else{ -->
+			canvas.style.height = h + "px";
+			canvas.style.width =  (h * portraitRatio1) + "px";
+			canvas.style.position = "absolute";
+			canvas.style.top = (h / 2) + "px";
+			canvas.style.left = "50%";
+			canvas.style.transform = "translate(-50%, -50%)";
+		<!-- } -->
+		
+		}
+		else {
+		let  minbili=1080/2400;
+		let  maxbili =540/960;
+		<!-- if(currentRatio>minbili&&currentRatio<maxbili) -->
+		<!-- { -->
+			<!-- canvas.style.width = "100%"; -->
+			<!-- canvas.style.height = h + "px"; -->
+			<!-- canvas.style.position = "absolute"; -->
+			<!-- canvas.style.top = (h / 2) + "px"; -->
+			<!-- canvas.style.left = "50%"; -->
+			<!-- canvas.style.transform = "translate(-50%, -50%)"; -->
+		<!-- } -->
+		<!-- else{ -->
+		      if (currentRatio > targetratio) {
+        canvas.style.height = h + "px";
+        canvas.style.width = (h * targetratio) + "px";
+      } else {
+        canvas.style.width = w + "px";
+        canvas.style.height = (w / targetratio) + "px";
+      }
+      canvas.style.position = "absolute";
+      canvas.style.left = "50%";
+      canvas.style.top = "50%";
+	  canvas.style.transform = "translate(-50%, -50%)";
+		<!-- } -->
+	  }
+	  }else 
+	  {
+		canvas.style.height = h + "px";
+		canvas.style.width =  (h * portraitRatio) + "px";
+	  }
+    }
+	
+	function resizeLobbyUnityCanvas() {
+	  if(ishengping)
+	  {
+		resizeLandscape();
+		return;
+	  }
+      let w = window.innerWidth;
+      let h = window.innerHeight;
+      let portraitRatio =540/960;
+      let landscapeRatio = 960/540;
+	  let portraitRatio1 =1080/1920;
+	  let targetratio = currentOrientation === "landscape" ? landscapeRatio : portraitRatio;
+      let currentRatio = w / h;
+
+	  if(isMobileDevice())
+	  {
+	  	if(w>h)
+		{
+		let  maxbili=2400/1080;
+		let  minbili =960/540;
+		if(isIPad())
+		{
+			canvas.style.height = h + "px";
+			canvas.style.width =  (h * portraitRatio1) + "px";
+		}else 
+		{
+			canvas.style.height = h + "px";
+			canvas.style.width =  (h * portraitRatio) + "px";
+		}
+		canvas.style.position = "absolute";
+		canvas.style.top = (h / 2) + "px";
+		canvas.style.left = "50%";
+		canvas.style.transform = "translate(-50%, -50%)";
+		}
+		else 
+		{
+			let  minbili=1080/2400;
+		let  maxbili =540/960;
+		if(isIPad())
+		{
+		   if (currentRatio > targetratio) {
+			canvas.style.height = h + "px";
+			canvas.style.width = (h * targetratio) + "px";
+			} else {
+			canvas.style.width = w + "px";
+			canvas.style.height = (w / targetratio) + "px";
+			}
+		}else 
+		{
+			canvas.style.width = "100%";
+			canvas.style.height = h + "px";
+		}
+		canvas.style.position = "absolute";
+		canvas.style.top = (h / 2) + "px";
+		canvas.style.left = "50%";
+		canvas.style.transform = "translate(-50%, -50%)";
+		}
+	  }else 
+	  {
+		canvas.style.height = h + "px";
+		canvas.style.width =  (h * portraitRatio) + "px";
+	  }
+	     var loader = document.getElementById("loaderContainer");
+        if (loader) {
+          loader.style.width = canvas.style.width;
+          loader.style.height = canvas.style.height;
+          loader.style.position = canvas.style.position;
+          loader.style.left = canvas.style.left;
+          loader.style.top = canvas.style.top;
+          loader.style.transform = canvas.style.transform;
+        }
+    }
+	
+	let islobby=true;
+	function resizeUnityCanvas() {
+	  if(islobby)
+	  {
+		resizeLobbyUnityCanvas();
+	  }
+	  else 
+	  {
+		resizeGameUnityCanvas();
+	  }
+    }
+	function IsLobby(lobbystate) {
+	  islobby = lobbystate === 1 ? true : false;
+      resizeUnityCanvas();
+    }
+	
+	function resizeLandscape() {
+		let w = window.innerWidth;
+		let h = window.innerHeight;
+		canvas.style.width = w + "px";
+		canvas.style.height = h + "px";
+		canvas.style.position = "absolute";
+
+		canvas.style.top = (h / 2) + "px";
+		canvas.style.left = "50%";
+		canvas.style.transform = "translate(-50%, -50%)";
+    }
+
+    let ishengping =false;
+    // æ¨ªå±æ¶è°ç¨çæ¹æ³
+    function addWidth() {
+      currentOrientation = "landscape";
+	  ishengping=true;
+      resizeLandscape();
+    }
+
+    // ç«å±æ¶è°ç¨çæ¹æ³
+    function removeWidth() {
+      currentOrientation = "portrait";
+	  ishengping=false;
+      resizeUnityCanvas();
+    }
+
+	/* ================== Unity å¯å¨ / éè¯ ================== */
+	const BACKGROUND_RELOAD_TIME = 10 * 60 * 1000; // 30åé
+	const MAX_RETRY = 3;
+
+	let retryCount = 0;
+	let backgroundTimestamp = 0;
+	let isReloading = false;
+
+
+	window.unityInstance = null;
+	function recreateCanvas() {
+		const old = document.getElementById("unity-canvas");
+		if (old) old.remove();
+
+		const canvas = document.createElement("canvas");
+		canvas.id = "unity-canvas";
+		canvas.width = 540;
+		canvas.height = 960;
+		document.getElementById("unity-container").appendChild(canvas);
+		return canvas;
+	}
+	
+	/* ================== å®å¨ Reload ================== */
+	function safeReload() {
+		if (isReloading) return;
+		isReloading = true;
+
+		console.warn("[Lifecycle] Safe reload");
+
+		// 1ï¸â£ ç«å»åæ­ Unity å¼ç¨ï¼å³é®ï¼
+		try {
+			window.unityInstance = null;
+		} catch (e) {}
+
+		// 2ï¸â£ åæ­¥è·³è½¬ï¼ä¸è¦ç­ï¼
+		window.location.href = window.location.href.split("#")[0];
+	}
+	
+	let resizeTimeout; // ç¨äºå­å¨setTimeoutçID
+
+	// çå¬çªå£çresizeäºä»¶
+	window.addEventListener("orientationchange", function() {
+    // æ¸é¤ä¹åçå»¶è¿æ§è¡ï¼é¿åå¤æ¬¡è§¦åï¼
+    clearTimeout(resizeTimeout);
+
+    // è®¾ç½®å»¶è¿æ§è¡çæ¶é´ï¼ä¾å¦ 300msï¼
+    resizeTimeout = setTimeout(function() {
+        // éç¥Unityå±æ´æ°æ¹å
+        if (window.innerWidth > window.innerHeight) {
+            currentOrientation = "landscape";
+            // æ¨ªå±
+            if (typeof unityInstance !== 'undefined') {
+                unityInstance.SendMessage('WebGLCallbackReceiver', 'SetOrientation', 'Landscape');
+            }
+        } else {
+            currentOrientation = "portrait";
+            // ç«å±
+            if (typeof unityInstance !== 'undefined') {
+                unityInstance.SendMessage('WebGLCallbackReceiver', 'SetOrientation', 'Portrait');
+            }
+        }
+
+        // è°æ´Canvaså¤§å°
+        resizeUnityCanvas();
+		}, 400);  // å»¶è¿400msæ§è¡resizeUnityCanvas  æäºå¤§æºå½¢è½¬çæ¢ å»¶è¿é«ä¸ç¹
+	});
+	//å³é­é®ç
+	function closeKeyboard() {
+        // å½åæ¿æ´»åç´ 
+        var el = document.activeElement;
+
+        if (!el) return;
+
+        var tag = el.tagName;
+        if (tag === "INPUT" || tag === "TEXTAREA") {
+            try {
+                el.blur();
+            } catch (e) {}
+        }
+    }
+    //å³é­é®ç
+	function closeKeyboard() {
+        // å½åæ¿æ´»åç´ 
+        var el = document.activeElement;
+
+        if (!el) return;
+
+        var tag = el.tagName;
+        if (tag === "INPUT" || tag === "TEXTAREA") {
+            try {
+                el.blur();
+            } catch (e) {}
+        }
+    }
+	var audioResumePending = false;
+	function getUnityAudioContext() {
+		if (typeof unityInstance === "undefined") return null;
+		var m = unityInstance.Module;
+		return m?.WEBAudioContext || m?.audioContext || null;
+	}
+	function tryResumeUnityAudio(fromUserGesture) {
+		var ctx = getUnityAudioContext();
+		if (!ctx) return;
+
+		if (ctx.state === "suspended") {
+			ctx.resume().then(() => {
+				console.log("WebAudio resumed", fromUserGesture ? "(gesture)" : "");
+				audioResumePending = false;
+
+				// AudioContext çæ­£æ¢å¤ååéç¥ Unity
+				unityInstance?.SendMessage('SoundPlayer', 'ResumeAudio');
+			}).catch(err => {
+				console.warn("resume failed", err);
+				audioResumePending = true;
+			});
+		} else if (ctx.state === "running") {
+			audioResumePending = false;
+			unityInstance?.SendMessage('SoundPlayer', 'ResumeAudio');
+		}
+	}
+    document.addEventListener('visibilitychange', function() {
+        if (document.hidden) {
+			backgroundTimestamp = Date.now();
+			closeKeyboard();
+            // é¡µé¢åå°åå°
+            if (typeof unityInstance !== 'undefined') {
+                unityInstance.SendMessage('SoundPlayer', 'PauseAudio');
+            }
+        } else {
+			const stay = Date.now() - backgroundTimestamp;
+			if (stay > BACKGROUND_RELOAD_TIME) {
+				console.warn("Stay too long, reload");
+				safeReload();
+				return;
+			}
+			// ä¿®å¤é¨åæµè§å¨è¿ååå°æ¶ Unity Web Audio æ¥é
+			// æ è®°éè¦æ¢å¤ï¼ä½ä¸ä¿è¯æå
+			audioResumePending = true;
+			tryResumeUnityAudio(false);
+            // é¡µé¢åååå°
+            if (typeof unityInstance !== 'undefined') {
+                unityInstance.SendMessage('SoundPlayer', 'ResumeAudio');
+            }
+        }
+    });
+	// â ç¨æ·æå¿ååºï¼å³é®ï¼
+	document.addEventListener("touchend", function () {
+		if (audioResumePending) {
+			tryResumeUnityAudio(true);
+		}
+	}, { passive: true });
+	//é¡µé¢è¢«æèµ·ï¼ååå° / éå±ï¼
+    window.addEventListener("pagehide", function () {
+        closeKeyboard();
+    });
+    // é¡µé¢å¤±ç¦ï¼é¨åæµè§å¨ï¼
+    window.addEventListener("blur", function () {
+        closeKeyboard();
+    });
+	resizeUnityCanvas();
+	
+	
+	/* iOS ç¼©æ¾æå¿ç´æ¥ç¦æ­¢ */
+	['gesturestart','gesturechange','gestureend'].forEach(ev => {
+		document.addEventListener(ev, e => e.preventDefault());
+	});
+
+	function shouldBlockTouch(e) {
+		// å¤æï¼ä¸å®æ¦ï¼é²ç¼©æ¾ / ç³»ç»æå¿ï¼
+		if (e.touches && e.touches.length > 1) {
+			return true;
+		}
+
+		// è§¦ç¹ä¸å¨ Unity Canvas ä¸ï¼é»è¾¹ï¼
+		if (!e.target.closest('#unity-canvas')||!e.target.closest('#unity-mobile')) {
+			return true;
+		}
+
+		// åæ + å¨ canvas ä¸ï¼æ¾è¡ç» Unityï¼ScrollRect é è¿ä¸ªï¼
+		return false;
+	}
+	
+	<!-- window.addEventListener("load", resizeUnityCanvas); -->
+    var H5_BASE_LOADING_TIPS = [
+      "Downloading game resources...",
+      "Thanks for your patience",
+      "Loading your good luck",
+      "First load may take about 30 seconds."
+    ];
+    var loadingTipsIndex = 0;
+    window.stopLoadingTips = function () {
+      if (window._loadingTipsTimer) {
+        clearInterval(window._loadingTipsTimer);
+        window._loadingTipsTimer = null;
+      }
+    };
+    function startLoadingTips() {
+      var el = document.getElementById("loadingText");
+      if (!el) return;
+      window.stopLoadingTips();
+      loadingTipsIndex = 0;
+      el.textContent = H5_BASE_LOADING_TIPS[0];
+      window._loadingTipsTimer = setInterval(function () {
+        loadingTipsIndex = (loadingTipsIndex + 1) % H5_BASE_LOADING_TIPS.length;
+        el.textContent = H5_BASE_LOADING_TIPS[loadingTipsIndex];
+      }, 3000);
+    }
+    // ç®åè¿åº¦æ´æ°å½æ°
+    window.updateProgress = function (progress) {
+      var percent = Math.round(progress * 100);
+      if (percent < 0) percent = 0;
+      if (percent > 100) percent = 100;
+      var progressFill = document.getElementById('progress-fill');
+      if (progressFill) {
+        progressFill.style.width = percent + '%';
+      }
+      var progressPercent = document.getElementById('progressPercent');
+      if (progressPercent) {
+        progressPercent.textContent = percent + '%';
+      }
+    };
+    startLoadingTips();
+	
+    (async function start() {
+	// ç­å¾ configPromise å è½½å®æ
+    const configPromise = await window.configPromise;
+	const _configText = await window._configText;
+	const _configIdentifierText = await window._configIdentifierText;
+	
+	firebase.initializeApp(configPromise.firebase);
+	await getDomains(configPromise);
+	if (!domains.length) throw 'No CDN domains';
+	
+	const domain = await pickAvailableDomain(domains);
+	version = await GetAppVersion(domain);
+	const buildUrl = `${domain}/${version}/Build`;	
+    var loaderUrl = buildUrl + `/${version}.loader.js`;
+    var config = {
+      dataUrl: buildUrl + `/${version}.data.unityweb`,
+      frameworkUrl: buildUrl + `/${version}.framework.js.unityweb`,
+        codeUrl: buildUrl + `/${version}.wasm.unityweb`,
+        streamingAssetsUrl:  `${domain}/${version}/StreamingAssets`,
+		companyName: "",
+		productName: "",
+		productVersion: "1.0.3",
+    };
+	config.companyName = configPromise.apple_title
+	config.productName = configPromise.apple_title	
+	if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
+	  config.devicePixelRatio =2;
+    }
+	function startUnity() {
+		if (isReloading) 
+		{			
+			return;
+		}
+		<!-- const canvas = recreateCanvas(); -->
+		<!-- retryCount++; -->
+		
+		createUnityInstance(canvas, config, (p) => {
+			// è¿åº¦æ¡æå¤§æ¾ç¤º 0.5ï¼çç»åç»­æ¸¸æå loading
+			const progress = p > 0.5 ? 0.5 : p;
+			if (window.updateProgress) window.updateProgress(progress);
+		}).then(instance => {
+			window.unityInstance = instance;
+			retryCount = 0;
+			<!-- const loader = document.getElementById("loaderContainer"); -->
+			<!-- if (loader) loader.remove(); -->
+			resizeUnityCanvas();
+			console.log("Unity started");
+		}).catch(err => {
+			console.error("Unity load failed", err);
+			if (retryCount < MAX_RETRY) {
+				safeReload();
+				<!-- setTimeout(startUnity, 1000); -->
+			} else {
+				console.error("Unity failed too many times, reload page");
+				safeReload();
+			}
+		});
+	}
+	const script = document.createElement("script");
+		script.src = loaderUrl;
+		script.onload = startUnity;
+		document.body.appendChild(script);
+		resizeUnityCanvas();
+	}
+    <!-- var script = document.createElement("script"); -->
+    <!-- script.src = loaderUrl; -->
+    <!-- script.onload = () => { -->
+      <!-- createUnityInstance(canvas, config, (progress) => { -->
+        <!-- updateProgress(progress); -->
+      <!-- }).then((unityInstance) => { -->
+        <!-- window.unityInstance = unityInstance; -->
+        <!-- // ç¬¬ä¸é¶æ®µç»æï¼ç¬¬äºé¶æ®µå¼å§ï¼è®¾ç½®å³é­Loadingå±çè®¡æ¶å¨ -->
+        <!-- closeLoading(); -->
+		<!-- requestAnimationFrame(resizeUnityCanvas); -->
+      <!-- }).catch((message) => { -->
+
+      <!-- }); -->
+    <!-- }; -->
+    <!-- document.body.appendChild(script); }-->
+	<!-- } -->
+	)();
+  </script>
+</body>
+
+</html>
