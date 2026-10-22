@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "dependencies": {
+    "express": "^4.21.2",
     "@libsql/client": "^0.14.0"
   }
 }
