@@ -904,6 +904,25 @@
 	<!-- } -->
 	)();
   </script>
+  <!-- ===== Turso DB helpers (calls /api/scores) ===== -->
+  <script>
+    window.saveScore = async function (player, score) {
+      try {
+        const r = await fetch("/api/scores", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ player: String(player), score: Number(score) })
+        });
+        return r.ok;
+      } catch (e) { console.warn("saveScore failed", e); return false; }
+    };
+    window.loadScores = async function () {
+      try {
+        const r = await fetch("/api/scores");
+        return r.ok ? await r.json() : [];
+      } catch (e) { console.warn("loadScores failed", e); return []; }
+    };
+  </script>
 </body>
 
 </html>

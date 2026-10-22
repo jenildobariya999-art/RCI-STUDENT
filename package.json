@@ -1,14 +1,8 @@
 {
-  "name": "vercel-turso-starter",
+  "name": "unity-webgl-turso",
   "version": "1.0.0",
   "private": true,
-  "description": "Minimal Express API connected to Turso for Vercel",
-  "main": "server.js",
-  "scripts": {
-    "start": "node server.js"
-  },
   "dependencies": {
-    "@libsql/client": "^0.15.15",
-    "express": "^5.1.0"
+    "@libsql/client": "^0.14.0"
   }
 }
